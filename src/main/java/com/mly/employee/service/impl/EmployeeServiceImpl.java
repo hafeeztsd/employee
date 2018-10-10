@@ -49,11 +49,11 @@ public class EmployeeServiceImpl implements EmployeeService, Observable {
 	}
 
 	@Override
-	public int createEmployee(Employee employee) {
+	public Employee createEmployee(Employee employee) {
 		employee.setId(idGenerator.incrementAndGet());
 		employees.add(employee);
 		writeEmployees();
-		return employee.getId();
+		return employee;
 	}
 
 	@Override
@@ -80,7 +80,11 @@ public class EmployeeServiceImpl implements EmployeeService, Observable {
 
 	@Override
 	public Employee findEmployeeById(int id) {
-		return employees.get(employees.indexOf(new Employee(id)));
+		int index = employees.indexOf(new Employee(id));
+		if (index > -1) {
+			return employees.get(index);
+		}
+		return null;
 	}
 
 	@Override
@@ -96,7 +100,7 @@ public class EmployeeServiceImpl implements EmployeeService, Observable {
 		LOGGER.info(String.valueOf(properties));
 		String dir = properties.getFiledir();
 		String fileName = properties.getFilename();
-		String path = dir + "\\" + fileName;
+		String path = dir + fileName;
 		employeeFile = new File(path);
 		file = Paths.get(path);
 		try {

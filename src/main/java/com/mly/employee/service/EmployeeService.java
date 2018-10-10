@@ -6,7 +6,7 @@ import com.mly.employee.model.Employee;
 
 public interface EmployeeService {
 
-	int createEmployee(Employee employee);
+	Employee createEmployee(Employee employee);
 
 	List<Employee> findAllEmployees();
 

@@ -25,8 +25,8 @@ public class EmployeeServiceTest {
 		employee.setAge(12);
 		employee.setFullName("Abdul Hafeez");
 		employee.setSalary(1452);
-		int id = employeeService.createEmployee(employee);
-		Assert.assertTrue("Invalid ID returned by employee create service", id > 0);
+		employee = employeeService.createEmployee(employee);
+		Assert.assertTrue("Invalid ID returned by employee create service", employee.getId() > 0);
 	}
 
 	@Test
@@ -53,16 +53,15 @@ public class EmployeeServiceTest {
 		Assert.assertTrue("No Employee found ", employee.getFullName().equals(correctName));
 	}
 
-
 	@Test
 	public void testDeleteEmployee() {
 		Employee employee = new Employee();
 		employee.setAge(20);
 		employee.setFullName("User to be deleted");
 		employee.setSalary(5000);
-		int id = employeeService.createEmployee(employee);
-		boolean deleted = employeeService.deleteEmployeeById(id);
+		employee = employeeService.createEmployee(employee);
+		boolean deleted = employeeService.deleteEmployeeById(employee.getId());
 		Assert.assertFalse("Employee still exist ", !deleted);
 	}
-	
+
 }
