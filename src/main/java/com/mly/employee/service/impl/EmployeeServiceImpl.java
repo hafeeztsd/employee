@@ -1,13 +1,13 @@
 package com.mly.employee.service.impl;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -15,35 +15,77 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mly.employee.config.Properties;
 import com.mly.employee.model.Employee;
 import com.mly.employee.service.EmployeeService;
-import com.mly.employee.util.IDGenerator;
+import com.mly.employee.service.Observable;
+import com.mly.employee.service.Observer;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService, Observable {
 
+	private static final String EMPTY_VALUE = "";
 	private static final Logger LOGGER = Logger.getLogger(EmployeeServiceImpl.class.getName());
 	private static final ObjectMapper MAPPER = new ObjectMapper();
-
 	private Path file;
+	private File employeeFile;
+	private List<Employee> employees = new ArrayList<>();
+	private AtomicInteger idGenerator;
+	private List<Observer> observers = new ArrayList<>();
+	private String message;
 
 	@Override
-	public int createEmployee(Employee employee) {
-		try {
-			employee.setId(IDGenerator.generate());
-			String json = MAPPER.writeValueAsString(employee);
-		} catch (Exception e) {
-			throw new RuntimeException("Error while adding " + employee);
-		}
-		return 0;
+	public void register(Observer observer) {
+		observers.add(observer);
 	}
 
 	@Override
-	public List<Employee> findAll() {
-		return null;
+	public void notifyObservers() {
+		for (Observer observer : observers) {
+			observer.receive(message);
+		}
+	}
+
+	@Override
+	public int createEmployee(Employee employee) {
+		employee.setId(idGenerator.incrementAndGet());
+		employees.add(employee);
+		writeEmployees();
+		return employee.getId();
+	}
+
+	@Override
+	public Employee updateEmployee(Employee employee) {
+		int index = employees.indexOf(employee);
+		if (index < 0) {
+			throw new RuntimeException("No such Employee exist " + employee);
+		}
+		employees.set(index, employee);
+		writeEmployees();
+		return employees.get(index);
+	}
+
+	@Override
+	public boolean deleteEmployeeById(int id) {
+		boolean removed = employees.remove(new Employee(id));
+		if (removed) {
+			writeEmployees();
+			message = "Employee wih ID = " + id + " deleted successfully";
+			notifyObservers();
+		}
+		return removed;
+	}
+
+	@Override
+	public Employee findEmployeeById(int id) {
+		return employees.get(employees.indexOf(new Employee(id)));
+	}
+
+	@Override
+	public List<Employee> findAllEmployees() {
+		return employees;
 	}
 
 	@Autowired
@@ -55,18 +97,40 @@ public class EmployeeServiceImpl implements EmployeeService {
 		String dir = properties.getFiledir();
 		String fileName = properties.getFilename();
 		String path = dir + "\\" + fileName;
-		File employeeFile = new File(path);
-		if (!employeeFile.exists()) {
-			boolean created = false;
-			try {
+		employeeFile = new File(path);
+		file = Paths.get(path);
+		try {
+			if (!employeeFile.exists()) {
+				boolean created = false;
 				created = employeeFile.createNewFile();
-				file = Paths.get(path);
-				Files.write(file, "[]".getBytes(), StandardOpenOption.APPEND);
-			} catch (IOException e) {
-				throw new RuntimeException("Error while creating file: " + e.getMessage());
+				idGenerator = new AtomicInteger(0);
+				writeEmployees();
+				LOGGER.info(" File  " + path + " created successfully " + created);
+			} else {
+				readEmployees();
+				idGenerator = new AtomicInteger(employees.size());
 			}
-			LOGGER.info(" File  " + path + " created successfully " + created);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
+	private void writeEmployees() {
+		try {
+			Files.write(file, MAPPER.writeValueAsBytes(EMPTY_VALUE), StandardOpenOption.CREATE);
+			Files.write(file, MAPPER.writeValueAsBytes(employees), StandardOpenOption.CREATE);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void readEmployees() {
+		try {
+			Class<?> clz = Class.forName(Employee.class.getCanonicalName());
+			JavaType type = MAPPER.getTypeFactory().constructCollectionType(List.class, clz);
+			employees = MAPPER.readValue(employeeFile, type);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 

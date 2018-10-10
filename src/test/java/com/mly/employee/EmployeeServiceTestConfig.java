@@ -11,16 +11,17 @@ import org.springframework.context.annotation.Configuration;
 
 import com.mly.employee.config.Properties;
 import com.mly.employee.service.EmployeeService;
+import com.mly.employee.service.Observer;
 
 @Configuration
-@ComponentScan(basePackageClasses = { EmployeeService.class })
+@ComponentScan(basePackageClasses = { EmployeeService.class, Observer.class })
 public class EmployeeServiceTestConfig {
 
 	private static final String EMPLOYEE_JSON = "employee.json";
 	private static final String USER_DIR = "user.dir";
 	private static final Logger LOGGER = Logger.getLogger(EmployeeServiceTestConfig.class.getName());
 	private Properties properties;
-	
+
 	@Bean
 	public Properties properties() {
 		properties = new Properties();
@@ -29,7 +30,7 @@ public class EmployeeServiceTestConfig {
 		return properties;
 	}
 
-	@PreDestroy
+	// @PreDestroy
 	public void cleanUp() {
 		LOGGER.info("Deleting test generated file....");
 		String dir = properties.getFiledir();
@@ -38,7 +39,7 @@ public class EmployeeServiceTestConfig {
 		File employeeFile = new File(path);
 		boolean deleted = employeeFile.delete();
 		LOGGER.info("test file deleted successfully " + deleted);
-		
+
 	}
-	
+
 }

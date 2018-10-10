@@ -1,0 +1,22 @@
+[
+	{
+		"id": 2,
+		"fullName": "Abdul Sattar",
+		"age": 17,
+		"salary": 1400
+	},
+
+	{
+		"id": 3,
+		"fullName": "Test User",
+		"age": 20,
+		"salary": 5000
+	},
+
+	{
+		"id": 4,
+		"fullName": "Abdul Hafeez",
+		"age": 12,
+		"salary": 1452
+	}
+]

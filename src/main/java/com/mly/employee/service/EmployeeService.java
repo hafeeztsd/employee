@@ -8,7 +8,11 @@ public interface EmployeeService {
 
 	int createEmployee(Employee employee);
 
-	List<Employee> findAll();
+	List<Employee> findAllEmployees();
 
-	
+	Employee updateEmployee(Employee employee);
+
+	boolean deleteEmployeeById(int id);
+
+	Employee findEmployeeById(int id) ;
 }
