@@ -30,7 +30,7 @@ public class EmployeeServiceTestConfig {
 		return properties;
 	}
 
-	// @PreDestroy
+	 @PreDestroy
 	public void cleanUp() {
 		LOGGER.info("Deleting test generated file....");
 		String dir = properties.getFiledir();
