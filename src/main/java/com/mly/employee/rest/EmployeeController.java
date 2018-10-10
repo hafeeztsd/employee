@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mly.employee.model.Employee;
 import com.mly.employee.service.EmployeeService;
 
+/**
+ * REST service for {@link EmployeeService}
+ * 
+ * @author hafeeztsd
+ *
+ */
 @RestController
 public class EmployeeController {
 
@@ -40,8 +46,13 @@ public class EmployeeController {
 	}
 
 	@PutMapping("/employees/{id}")
-	public Employee updateEmployee(Employee employee) {
-		return employeeService.updateEmployee(employee);
+	public ResponseEntity<Employee> updateEmployee(Employee employee) {
+		employee = employeeService.updateEmployee(employee);
+		if (null == employee) {
+			ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(employee);
+
 	}
 
 	@PostMapping("/employees")

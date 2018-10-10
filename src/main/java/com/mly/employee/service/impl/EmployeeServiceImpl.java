@@ -60,7 +60,7 @@ public class EmployeeServiceImpl implements EmployeeService, Observable {
 	public Employee updateEmployee(Employee employee) {
 		int index = employees.indexOf(employee);
 		if (index < 0) {
-			throw new RuntimeException("No such Employee exist " + employee);
+			return null;
 		}
 		employees.set(index, employee);
 		writeEmployees();
