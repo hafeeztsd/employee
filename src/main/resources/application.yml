@@ -6,6 +6,6 @@ server:
   port: 7777
   
 app:
-  filedir: C:\Users\hafeeztsd\Downloads\employee\
+  filedir: /Users/abdulhafeez/Documents/tempp/employee/
   filename: employee.json
        

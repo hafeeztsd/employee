@@ -1,0 +1,18 @@
+= Employee Management Service API Documentation
+
+This is an output for a service running at http://localhost:7777:
+
+.request
+include::{snippets}/employees/http-request.adoc[]
+
+.response
+include::{snippets}/employees/http-response.adoc[]
+
+.curl-request
+include::{snippets}/employees/curl-request.adoc[]
+
+.request-body
+include::{snippets}/employees/request-body.adoc[]
+
+.response-body
+include::{snippets}/employees/response-body.adoc[]

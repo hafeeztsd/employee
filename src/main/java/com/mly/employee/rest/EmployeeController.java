@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mly.employee.model.Employee;
@@ -46,7 +47,7 @@ public class EmployeeController {
 	}
 
 	@PutMapping("/employees/{id}")
-	public ResponseEntity<Employee> updateEmployee(Employee employee) {
+	public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee) {
 		employee = employeeService.updateEmployee(employee);
 		if (null == employee) {
 			ResponseEntity.notFound().build();
@@ -56,7 +57,7 @@ public class EmployeeController {
 	}
 
 	@PostMapping("/employees")
-	public Employee createEmployees(Employee employee) {
+	public Employee createEmployees(@RequestBody Employee employee) {
 		return employeeService.createEmployee(employee);
 	}
 
