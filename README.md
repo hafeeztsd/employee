@@ -4,3 +4,5 @@ the application.yml provided in src/main/resources
 
 Unit & integration tests can be found in src/main/test package. Spring Rest docs are used to genreate the HTML format docs.
 
+Event is only generated in case an employee is deleted. Consumer only print the event message in the logs.
+
