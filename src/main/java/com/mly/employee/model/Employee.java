@@ -31,7 +31,7 @@ public class Employee {
 		this.fullName = fullName;
 	}
 
-	public int getAge() {
+	public Integer getAge() {
 		return age;
 	}
 

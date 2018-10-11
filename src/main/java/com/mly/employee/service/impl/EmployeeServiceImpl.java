@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
@@ -17,8 +19,13 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mly.employee.comparator.EmployeeAscComparator;
+import com.mly.employee.comparator.EmployeeDescComparator;
 import com.mly.employee.config.Properties;
+import com.mly.employee.filter.service.FilterOperatorProcessor;
+import com.mly.employee.filter.service.impl.FilterOperatorProcessorFactory;
 import com.mly.employee.model.Employee;
+import com.mly.employee.model.FilterCriteria;
 import com.mly.employee.service.EmployeeService;
 import com.mly.employee.service.Observable;
 import com.mly.employee.service.Observer;
@@ -26,6 +33,7 @@ import com.mly.employee.service.Observer;
 @Service
 public class EmployeeServiceImpl implements EmployeeService, Observable {
 
+	private static final String SORT_ASC = "asc";
 	private static final String EMPTY_VALUE = "";
 	private static final Logger LOGGER = Logger.getLogger(EmployeeServiceImpl.class.getName());
 	private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -117,6 +125,20 @@ public class EmployeeServiceImpl implements EmployeeService, Observable {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public List<Employee> findEmployeesByCriteria(FilterCriteria filterCriteria) {
+		int age = filterCriteria.getAge();
+		String sortOperator = filterCriteria.getSort().getValue();
+		FilterOperatorProcessor<Employee> processor = FilterOperatorProcessorFactory
+				.getInstance(filterCriteria.getOperator());
+		List<Employee> employeeList = new ArrayList<>(employees);
+		employeeList = processor.filter(employeeList, age);
+		Comparator<Employee> comparator = SORT_ASC.equals(sortOperator) ? new EmployeeAscComparator()
+				: new EmployeeDescComparator();
+		Collections.sort(employeeList, comparator);
+		return employeeList;
 	}
 
 	private void writeEmployees() {

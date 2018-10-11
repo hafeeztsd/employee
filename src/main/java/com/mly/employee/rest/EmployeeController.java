@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mly.employee.model.Employee;
+import com.mly.employee.model.FilterCriteria;
 import com.mly.employee.service.EmployeeService;
 
 /**
@@ -29,6 +31,11 @@ public class EmployeeController {
 	@GetMapping("/employees")
 	public List<Employee> findAllEmployees() {
 		return employeeService.findAllEmployees();
+	}
+
+	@GetMapping("/employees/filter")
+	public List<Employee> findEmployeesByCritera(@RequestParam FilterCriteria filterCriteria) {
+		return employeeService.findEmployeesByCriteria(filterCriteria);
 	}
 
 	@GetMapping("/employees/{id}")
